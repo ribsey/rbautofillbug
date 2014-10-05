@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from reviewboard.extensions.packaging import setup
 
 
@@ -9,9 +7,10 @@ VERSION = "0.1"
 setup(
     name=PACKAGE,
     version=VERSION,
-    description="Extension rbautofillbug",
+    description="A ReviewBoard extension that extracts bug IDs from review "
+                "request summaries",
     author="Jeremie Jost",
-    author_email="jeremiejost@gmail.com"
+    author_email="jeremiejost@gmail.com",
     packages=["rbautofillbug"],
     entry_points={
         'reviewboard.extensions':
