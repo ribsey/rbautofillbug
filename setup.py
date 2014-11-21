@@ -2,7 +2,7 @@ from reviewboard.extensions.packaging import setup
 
 
 PACKAGE = "rbautofillbug"
-VERSION = "0.1"
+VERSION = "0.1.1"
 
 setup(
     name=PACKAGE,
