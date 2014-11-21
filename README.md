@@ -25,4 +25,11 @@ Then go to your Administration UI -> Extensions page and click "Check for instal
 Configuration
 -------------
 
-You can change the regular expresssion used to extract bug IDs from the summary by clicking on the "Configure" link for the extension on the extensions list page. By default, AutoFillBugs will recognise bug IDs of the form _#[numerical_bug_id]_, e.g. _#42_.
+You can change the regular expression used to extract bug IDs from the summary by clicking on the "Configure" link for the extension on the extensions list page and changing the value of the "Bug Format" field.
+By default, AutoFillBugs will recognise bug IDs of the form _#[numerical_bug_id]_, e.g. _#42_.
+
+It is possible to match on multiple patterns using ORs. For example, this will match "issue 42", "Issue 42" or "#42":
+
+```
+[Ii]ssue (\d+)|#(\d+)
+```
