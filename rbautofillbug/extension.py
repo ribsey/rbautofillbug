@@ -36,7 +36,8 @@ class AutoFillBugExtension(Extension):
             review_request_draft = instance
             if self.need_to_update_bugs_closed(review_request_draft):
                 summary = review_request_draft.summary
-                bugs = self.find_bugs(summary)
+                bug_regex = self.settings['bug_format']
+                bugs = find_bugs(bug_regex, summary)
                 review_request_draft.bugs_closed = ', '.join(bugs)
                 review_request = review_request_draft.review_request
                 logging.info(
@@ -59,14 +60,12 @@ class AutoFillBugExtension(Extension):
                 review_request_draft not in self.already_parsed_drafts and
                 review_request_draft.summary)
 
-    def find_bugs(self, summary):
-        bug_regex = self.settings['bug_format']
-        bugs = re.findall(bug_regex, summary)
-        # Flatten list if there are multiple groups to match
-        try:
-            bugs = list(itertools.chain.from_iterable(bugs))
-        except TypeError:
-            pass
-        # Remove empty matches
-        return filter(None, bugs)
+def find_bugs(bug_regex, summary):
+    bug_regex = re.compile(bug_regex)
+    bugs = bug_regex.findall(summary)
+    # Flatten list if there are multiple groups to match
+    if bug_regex.groups > 1:
+        bugs = list(itertools.chain.from_iterable(bugs))
+    # Remove empty matches
+    return filter(None, bugs)
 
