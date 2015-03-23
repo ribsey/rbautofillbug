@@ -28,12 +28,14 @@ class AutoFillBugExtension(Extension):
 
     def initialize(self):
         self.already_parsed_drafts = set()
-        SignalHook(self, post_init, self.on_post_init)
+        SignalHook(self, pre_save, self.on_pre_save)
         SignalHook(self, post_delete, self.on_post_delete)
 
-    def on_post_init(self, sender, instance, **kwargs):
+    def on_pre_save(self, sender, instance, **kwargs):
         if sender is ReviewRequestDraft:
             review_request_draft = instance
+            logging.debug("pre save for request draft %s",
+                          review_request_draft.id)
             if self.need_to_update_bugs_closed(review_request_draft):
                 summary = review_request_draft.summary
                 bug_regex = self.settings['bug_format']
