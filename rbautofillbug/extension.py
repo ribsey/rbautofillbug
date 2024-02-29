@@ -33,16 +33,18 @@ class AutoFillBugExtension(Extension):
             review_request_draft = instance
             logging.debug("pre save for request draft %s",
                           review_request_draft.id)
-            if self.need_to_update_bugs_closed(review_request_draft):
+            if self.need_to_update_bugs_closed(review_request_draft.id):
                 summary = review_request_draft.summary
+                description = review_request_draft.description
                 bug_regex = self.settings['bug_format']
                 bugs = find_bugs(bug_regex, summary)
+                bugs = bugs + find_bugs(bug_regex, description)
                 review_request_draft.bugs_closed = ', '.join(bugs)
                 review_request = review_request_draft.review_request
                 logging.info(
                     "Found bugs %s in summary of review request %s",
-                     bugs, review_request.get_display_id())
-                self.already_parsed_drafts.add(review_request_draft)
+                    bugs, review_request.get_display_id())
+                self.already_parsed_drafts.add(review_request_draft.id)
                 logging.debug("Marking review request draft %s as parsed",
                               review_request_draft.id)
 
@@ -51,13 +53,21 @@ class AutoFillBugExtension(Extension):
             review_request_draft = instance
             logging.debug("Removing review request draft %s from parsed drafts",
                           review_request_draft.id)
-            self.already_parsed_drafts.discard(review_request_draft)
+            self.already_parsed_drafts.discard(review_request_draft.id)
 
-    def need_to_update_bugs_closed(self, review_request_draft):
-        return (review_request_draft.review_request and
-                not review_request_draft.review_request.public and
-                review_request_draft not in self.already_parsed_drafts and
-                review_request_draft.summary)
+    def need_to_update_bugs_closed(self, review_request_draft_id):
+        try:
+            review_request_draft = ReviewRequestDraft.objects.get(
+                id=review_request_draft_id)
+            return (review_request_draft.review_request and
+                    not review_request_draft.review_request.public and
+                    review_request_draft_id not in self.already_parsed_drafts and
+                    review_request_draft.summary)
+        except ReviewRequestDraft.DoesNotExist:
+            logging.info(
+                "AutoFillBugExtension - ReviewRequestDraft with id %s does not exist", review_request_draft_id)
+            return True
+
 
 def find_bugs(bug_regex, summary):
     bug_regex = re.compile(bug_regex)
@@ -66,4 +76,4 @@ def find_bugs(bug_regex, summary):
     if bug_regex.groups > 1:
         bugs = list(itertools.chain.from_iterable(bugs))
     # Remove empty matches
-    return filter(None, bugs)
+    return list(filter(None, bugs))

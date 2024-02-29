@@ -1,8 +1,9 @@
 from reviewboard.extensions.packaging import setup
+from setuptools import find_packages
 
 
 PACKAGE = "rbautofillbug"
-VERSION = "0.1.3"
+VERSION = "0.1.4"
 
 setup(
     name=PACKAGE,
@@ -11,7 +12,7 @@ setup(
                 "request summaries",
     author="Jeremie Jost",
     author_email="jeremiejost@gmail.com",
-    packages=["rbautofillbug"],
+    packages=find_packages(),
     entry_points={
         'reviewboard.extensions':
             '%s = rbautofillbug.extension:AutoFillBugExtension' % PACKAGE,
