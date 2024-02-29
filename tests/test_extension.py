@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
+from rbautofillbug.extension import AutoFillBugExtension, find_bugs
+from unittest import TestCase
+import unittest
 from django.conf import settings
 settings.configure()
 
-import unittest
-from unittest import TestCase
-from rbautofillbug.extension import AutoFillBugExtension, find_bugs
 
 class TestAutoFillBugsExtension(TestCase):
     def test_find_bugs_single_regex(self):
@@ -29,8 +29,9 @@ class TestAutoFillBugsExtension(TestCase):
     def test_find_bugs_multiple_regexes_in_same_summary(self):
         bug_regex = "#(\d+)|issue (\d+)"
         bugs = find_bugs(bug_regex,
-            "#17: foo() returns trailing whitespace (also fixes issue 11)")
+                         "#17: foo() returns trailing whitespace (also fixes issue 11)")
         self.assertItemsEqual(bugs, ['17', '11'])
+
 
 if __name__ == '__main__':
     unittest.main()

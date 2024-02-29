@@ -6,13 +6,10 @@ import logging
 import re
 import itertools
 
-from django.conf import settings
-from django.conf.urls import patterns, include
-from django.db.models.signals import post_init, post_delete, pre_save
+from django.db.models.signals import post_delete, pre_save
 from reviewboard.extensions.base import Extension
 from reviewboard.extensions.hooks import SignalHook
-from reviewboard.reviews.signals import review_request_publishing
-from reviewboard.reviews.models import ReviewRequestDraft, ReviewRequest
+from reviewboard.reviews.models import ReviewRequestDraft
 
 
 class AutoFillBugExtension(Extension):
@@ -70,4 +67,3 @@ def find_bugs(bug_regex, summary):
         bugs = list(itertools.chain.from_iterable(bugs))
     # Remove empty matches
     return filter(None, bugs)
-
